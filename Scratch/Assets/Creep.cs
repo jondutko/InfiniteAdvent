@@ -13,5 +13,5 @@ public class Creep {
 		hp = h;
 		maxhp = h;
 		tag = i;
-	};
+	}
 }

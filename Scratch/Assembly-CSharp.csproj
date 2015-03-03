@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\CombatDirector.cs" />
      <Compile Include="Assets\Creep.cs" />
      <Compile Include="Assets\CreepLibrary.cs" />
      <Compile Include="Assets\Director.cs" />

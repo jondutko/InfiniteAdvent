@@ -7,6 +7,10 @@ public class Director : MonoBehaviour {
 
 	public GUISkin skinny;
 
+	public Texture blank;
+
+	public CombatDirector currentCombat;
+
 	enum page {start, spawn, combat};
 	page state;
 	int squadSize;
@@ -37,6 +41,9 @@ public class Director : MonoBehaviour {
 		case page.spawn:
 			spawnPage();
 			break;
+		case page.combat:
+			combatPage();
+			break;
 		}
 	}
 
@@ -47,7 +54,6 @@ public class Director : MonoBehaviour {
 	}
 
 	void startPage(){
-		Debug.Log(GUI.skin.ToString());
 		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
 		GUI.Label(new Rect(100, 200, 500, 25), "Infinite Advent");
 		if(GUI.Button(new Rect(330, 227, 40, 26), ">")){
@@ -62,9 +68,66 @@ public class Director : MonoBehaviour {
 			GUI.Label(new Rect(5, 5 + (i*50), 190, 25), squad[i].name + ", "+squad[i].profession.title);
 		}
 		GUI.EndGroup();
+		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
 		GUI.BeginGroup(new Rect(490, 5, 200, 480)); 
-		GUI.Label (new Rect(10, 10, 95, 25), "Missions");
+		GUI.Label (new Rect(10, 10, 150, 25), "Missions");
+		for(int j = 0; j < missions.library.Count; j++){
+			if(GUI.Button(new Rect(10, 40, 150, 25), missions.library[j].name)){
+				primeCurrentMission(missions.library[j]);
+				transition(page.combat);
+			}
+		}
 		GUI.EndGroup();
+	}
+
+	void combatPage(){
+		switch(currentCombat.phase){
+		case CombatDirector.combatPhase.intro:
+			GUI.Label(new Rect(10, 200, 690, 25), currentCombat.activeMission.name);
+			if(GUI.Button (new Rect(325, 230, 50, 25), "Go!")){
+				currentCombat.phase = CombatDirector.combatPhase.setup;
+			}
+			break;
+		case CombatDirector.combatPhase.setup:
+			GUI.Label (new Rect(10, 10, 690, 25), "Who will first enter the fray?");
+			GUI.skin.button.alignment = TextAnchor.MiddleCenter;
+			for(int i = 0 ; i < squad.Count; i++){
+				if(GUI.Button(new Rect(10 + 10*(i) + 100*(i), 50, 100, 100), squad[i].name + "\n" + squad[i].profession.title)){
+					currentCombat.active = squad[i];
+					currentCombat.phase = CombatDirector.combatPhase.playerturn;
+					currentCombat.log += squad[i].name + " enters the fray!\n";
+				}
+			}
+			break;
+		case CombatDirector.combatPhase.playerturn:
+			combatLayout();
+			break;
+		case CombatDirector.combatPhase.enemyturn:
+			combatLayout();
+			break;
+		}
+	}
+
+	void combatLayout(){
+		//Combat Log
+		GUI.Box(new Rect(555, 5, 140, 490), " ");
+		GUI.Label(new Rect(560, 10, 130, 25), "Combat Log");
+
+		GUI.skin.label.alignment = TextAnchor.LowerLeft;
+		GUI.skin.label.fontSize = 10;
+		GUI.Label(new Rect(560, 40, 130, 450), currentCombat.log);
+
+		//Title Box
+		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+		GUI.skin.label.fontSize = 15;
+		GUI.Box(new Rect(5, 5, 540, 30), " ");
+		GUI.Label(new Rect(5, 5, 540, 30), currentCombat.activeMission.name);
+
+		//Player Tab
+		GUI.Box(new Rect(5, 40, 540, 250), " ");
+
+		//Creep Tab
+		GUI.Box(new Rect(5, 300, 540, 190), " ");
 	}
 
 	//END PAGE MANAGEMENT AND DISPLAY FUNCTIONS
@@ -100,6 +163,10 @@ public class Director : MonoBehaviour {
 	//END OF INITIALIZATION FUNCTIONS
 
 	//GAME LOOP FUNCTIONS
+	void primeCurrentMission(Mission m){
+		currentCombat = new CombatDirector(m);
+	}
+
 	void spawnNewSquad(){
 		squad = new List<Hero>();
 		for(int i = 0; i < squadSize; i++){

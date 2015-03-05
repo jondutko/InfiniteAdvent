@@ -11,6 +11,8 @@ public class CombatDirector {
 
 	public Mission activeMission;
 
+	public bool benching;
+
 	public string log;
 
 	public enum combatPhase{
@@ -27,5 +29,6 @@ public class CombatDirector {
 		activeMission = m;
 		phase = combatPhase.intro;
 		log = m.name+" begin!\n";
+		benching = false;
 	}
 }

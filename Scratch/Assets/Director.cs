@@ -7,7 +7,7 @@ public class Director : MonoBehaviour {
 
 	public GUISkin skinny;
 
-	public Texture blank;
+	public Texture[] heroportraits;
 
 	public CombatDirector currentCombat;
 
@@ -94,6 +94,11 @@ public class Director : MonoBehaviour {
 			for(int i = 0 ; i < squad.Count; i++){
 				if(GUI.Button(new Rect(10 + 10*(i) + 100*(i), 50, 100, 100), squad[i].name + "\n" + squad[i].profession.title)){
 					currentCombat.active = squad[i];
+					currentCombat.bench = new List<Hero>();
+					for(int j = 0; j < squad.Count; j++){
+						if(j != i)
+							currentCombat.bench.Add(squad[j]);
+					}
 					currentCombat.phase = CombatDirector.combatPhase.playerturn;
 					currentCombat.log += squad[i].name + " enters the fray!\n";
 				}
@@ -126,6 +131,31 @@ public class Director : MonoBehaviour {
 		//Player Tab
 		GUI.Box(new Rect(5, 40, 540, 250), " ");
 
+		//bench tab
+		GUI.Box (new Rect(5, 40, 140, 250), " ");
+		GUI.Label(new Rect(5, 40, 140, 30), "Bench");
+		GUI.enabled = currentCombat.benching;
+		for(int i = 0; i < currentCombat.bench.Count; i++){
+			if(GUI.Button(new Rect(10, 70 + (30*i), 130, 25), currentCombat.bench[i].name)){
+				Hero temp = currentCombat.active;
+				currentCombat.log += temp.name + " retreats.\n";
+				currentCombat.active = currentCombat.bench[i];
+				currentCombat.bench[i] = temp;
+				currentCombat.log += currentCombat.active.name + " enters the fray!\n";
+				currentCombat.benching = false;
+			}
+		}
+		GUI.enabled = true;
+
+		//active tab
+		GUI.skin.label.fontSize = 12;
+		GUI.Box (new Rect(145, 40, 400, 250), " ");
+		GUI.Box (new Rect(150, 45, 100, 100), heroportraits[currentCombat.active.profession.key]);
+		GUI.Label (new Rect(150, 146, 100, 25), currentCombat.active.name +", "
+		           +currentCombat.active.profession.title);
+		if(GUI.Button(new Rect(255, 45, 75, 25), "Switch")){
+			currentCombat.benching = true;
+		}
 		//Creep Tab
 		GUI.Box(new Rect(5, 300, 540, 190), " ");
 	}
@@ -147,9 +177,9 @@ public class Director : MonoBehaviour {
 
 	void initializeClasses(){
 		unlockedClasses = new List<RPGClass>();
-		unlockedClasses.Add(new RPGClass("Wizard"));
-		unlockedClasses.Add(new RPGClass("Knight"));
-		unlockedClasses.Add(new RPGClass("Rogue"));
+		unlockedClasses.Add(new RPGClass("Wizard", 0));
+		unlockedClasses.Add(new RPGClass("Fighter", 1));
+		unlockedClasses.Add(new RPGClass("Rogue", 2));
 	}
 
 	void initializeMissions(){
@@ -157,7 +187,7 @@ public class Director : MonoBehaviour {
 	}
 
 	void initializeSquadSettings(){
-		squadSize = 2;
+		squadSize = 3;
 	}
 
 	//END OF INITIALIZATION FUNCTIONS
@@ -170,9 +200,10 @@ public class Director : MonoBehaviour {
 	void spawnNewSquad(){
 		squad = new List<Hero>();
 		for(int i = 0; i < squadSize; i++){
-			string hname = namesDirectory[Random.Range(0, namesDirectory.Count)];
+			int randIndex = Random.Range(0, namesDirectory.Count);
+			string hname = namesDirectory[randIndex];
+			namesDirectory.RemoveAt(randIndex);
 			RPGClass hclass = unlockedClasses[Random.Range(0, unlockedClasses.Count)];
-			Debug.Log(hname+","+hclass.title);
 			squad.Add(new Hero(hname, hclass));
 		}
 	}

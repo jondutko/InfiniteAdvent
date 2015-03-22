@@ -7,7 +7,10 @@ public class Director : MonoBehaviour {
 
 	public GUISkin skinny;
 
+	public Texture[] UITextures;
+
 	public Texture[] heroportraits;
+	public Texture[] creepportraits;
 
 	public CombatDirector currentCombat;
 
@@ -19,6 +22,7 @@ public class Director : MonoBehaviour {
 	List<string> namesDirectory;
 
 	MissionLibrary missions;
+	CreepLibrary creeps;
 
 	void Start () {
 		initializeNames();
@@ -132,6 +136,7 @@ public class Director : MonoBehaviour {
 		GUI.Box(new Rect(5, 40, 540, 250), " ");
 
 		//bench tab
+		GUI.skin.label.fontSize = 15;
 		GUI.Box (new Rect(5, 40, 140, 250), " ");
 		GUI.Label(new Rect(5, 40, 140, 30), "Bench");
 		GUI.enabled = currentCombat.benching;
@@ -151,13 +156,56 @@ public class Director : MonoBehaviour {
 		GUI.skin.label.fontSize = 12;
 		GUI.Box (new Rect(145, 40, 400, 250), " ");
 		GUI.Box (new Rect(150, 45, 100, 100), heroportraits[currentCombat.active.profession.key]);
-		GUI.Label (new Rect(150, 146, 100, 25), currentCombat.active.name +", "
+		GUI.Label (new Rect(150, 145, 100, 25), currentCombat.active.name +", "
 		           +currentCombat.active.profession.title);
+
+		//hearts, empty and full
+		for(int i = 0; i < currentCombat.active.stats.maxhp_mod; i++){
+			if((i+1) <= currentCombat.active.stats.hp){
+				GUI.Label (new Rect(150 + ((i % 5) * 50), 180 + ((i/5) * 50), 50, 50), UITextures[1]);
+			}
+			else{
+				GUI.Label (new Rect(150 + ((i % 5) * 50), 180 + ((i/5) * 50), 50, 50), UITextures[0]);
+			}
+		}
+		//stats sub-tab
+		GUI.Label (new Rect(340, 70, 100, 25), currentCombat.active.stats.hp + " / " + currentCombat.active.stats.maxhp_mod);
+		GUI.Label (new Rect(340, 100, 100, 25), "w: " + currentCombat.active.stats.wd_mod);
+		GUI.Label (new Rect(340, 125, 100, 25), "s: " + currentCombat.active.stats.st_mod);
+		GUI.Label (new Rect(340, 150, 100, 25), "d: " + currentCombat.active.stats.dx_mod);
+
+		//buttons!
 		if(GUI.Button(new Rect(255, 45, 75, 25), "Switch")){
 			currentCombat.benching = true;
 		}
+		for(int i = 0; i < currentCombat.active.abilities.Length; i++){
+			if(GUI.Button(new Rect(255, 75+(i*25), 100, 23), currentCombat.getAbilityName(currentCombat.active.abilities[i]))){
+				currentCombat.abilityDirectory(currentCombat.active.abilities[i]);
+			}
+		}
 		//Creep Tab
 		GUI.Box(new Rect(5, 300, 540, 190), " ");
+
+		//creep active tab
+		GUI.skin.label.fontSize = 12;
+		GUI.Box (new Rect(5, 300, 400, 190), "  ");
+		GUI.Box(new Rect(300, 305, 100, 100), creepportraits[currentCombat.activeEnemy.tag]);
+		GUI.Label (new Rect(300, 410, 100, 25), currentCombat.activeEnemy.name);
+
+		GUI.Label (new Rect(140, 310, 100, 25), currentCombat.activeEnemy.stats.hp + " / " + currentCombat.activeEnemy.stats.maxhp_mod);
+		GUI.Label (new Rect(140, 340, 100, 25), "w: " + currentCombat.activeEnemy.stats.wd_mod);
+		GUI.Label (new Rect(140, 365, 100, 25), "s: " + currentCombat.activeEnemy.stats.st_mod);
+		GUI.Label (new Rect(140, 390, 100, 25), "d: " + currentCombat.activeEnemy.stats.dx_mod);
+
+
+		//Creep Bench
+		GUI.skin.label.fontSize = 15;
+		GUI.Box (new Rect(405, 300, 140, 190), " ");
+		GUI.Label(new Rect(405, 300, 140, 30), "Bench");
+		GUI.enabled = false;
+		for(int i = 0; i < currentCombat.benchEnemy.Count; i++){
+			GUI.Button(new Rect(410, 335 + (i*30), 130, 25), currentCombat.benchEnemy[i].name);
+		}
 	}
 
 	//END PAGE MANAGEMENT AND DISPLAY FUNCTIONS
@@ -177,13 +225,14 @@ public class Director : MonoBehaviour {
 
 	void initializeClasses(){
 		unlockedClasses = new List<RPGClass>();
-		unlockedClasses.Add(new RPGClass("Wizard", 0));
-		unlockedClasses.Add(new RPGClass("Fighter", 1));
-		unlockedClasses.Add(new RPGClass("Rogue", 2));
+		unlockedClasses.Add(new RPGClass("Wizard", 0, 7, 3, 4, new int[]{1}));
+		unlockedClasses.Add(new RPGClass("Fighter", 1, 3, 7, 4, new int[]{2}));
+		unlockedClasses.Add(new RPGClass("Rogue", 2, 4, 3, 7,  new int[]{3}));
 	}
 
 	void initializeMissions(){
 		missions = new MissionLibrary();
+		creeps = new CreepLibrary();
 	}
 
 	void initializeSquadSettings(){
@@ -194,7 +243,7 @@ public class Director : MonoBehaviour {
 
 	//GAME LOOP FUNCTIONS
 	void primeCurrentMission(Mission m){
-		currentCombat = new CombatDirector(m);
+		currentCombat = new CombatDirector(m, creeps);
 	}
 
 	void spawnNewSquad(){

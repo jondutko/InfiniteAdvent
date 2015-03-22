@@ -10,6 +10,6 @@ public class MissionLibrary {
 		populateLibrary();
 	}
 	public void populateLibrary(){
-		library.Add(0, new Mission("Goblin Mayhem", 0, new int[] {0, 0, 1}));
+		library.Add(0, new Mission("Goblin Mayhem", 0, new int[] {0, 1, 2}));
 	}
 }

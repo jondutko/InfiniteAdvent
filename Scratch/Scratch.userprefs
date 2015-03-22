@@ -1,12 +1,14 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CombatDirector.cs">
     <Files>
-      <File FileName="Assets\Director.cs" Line="197" Column="41" />
-      <File FileName="Assets\CombatDirector.cs" Line="32" Column="20" />
-      <File FileName="Assets\MissionLibrary.cs" Line="13" Column="52" />
-      <File FileName="Assets\CreepLibrary.cs" Line="15" Column="16" />
-      <File FileName="Assets\Creep.cs" Line="1" Column="1" />
+      <File FileName="Assets\Director.cs" Line="111" Column="40" />
+      <File FileName="Assets\CombatDirector.cs" Line="111" Column="26" />
+      <File FileName="Assets\Combatant.cs" Line="7" Column="21" />
+      <File FileName="Assets\Hero.cs" Line="6" Column="31" />
+      <File FileName="Assets\Creep.cs" Line="10" Column="67" />
+      <File FileName="Assets\CreepLibrary.cs" Line="20" Column="50" />
+      <File FileName="Assets\Stats.cs" Line="23" Column="2" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

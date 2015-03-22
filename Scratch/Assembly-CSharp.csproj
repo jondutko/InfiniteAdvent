@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\CombatDirector.cs" />
+     <Compile Include="Assets\Combatant.cs" />
      <Compile Include="Assets\Creep.cs" />
      <Compile Include="Assets\CreepLibrary.cs" />
      <Compile Include="Assets\Director.cs" />
@@ -54,6 +55,7 @@
      <Compile Include="Assets\Mission.cs" />
      <Compile Include="Assets\MissionLibrary.cs" />
      <Compile Include="Assets\RPGClass.cs" />
+     <Compile Include="Assets\Stats.cs" />
      <None Include="Assets\names.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
